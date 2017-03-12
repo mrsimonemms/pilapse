@@ -16,8 +16,8 @@ const moment = require('moment');
 module.exports = (config, sunriseSunset) => Promise.resolve()
   .then(() => {
     const map = {
-      startTime: 'astronomicalTwilightBegin',
-      endTime: 'astronomicalTwilightEnd'
+      startTime: 'nauticalTwighlightBegin',
+      endTime: 'nauticalTwighlightEnd'
     };
 
     /* Are we inside the start/end times? */
