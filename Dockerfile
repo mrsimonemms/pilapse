@@ -27,7 +27,7 @@ RUN ln -s /opt/nodejs/bin/npm /usr/bin/npm
 RUN echo "node version: $(node --version)"
 RUN echo "npm version: $(npm --version)"
 
-RUN npm install
+RUN npm install --production
 
 # Run run run
 CMD npm start
