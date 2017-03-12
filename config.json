@@ -7,7 +7,7 @@
     "savePath": "/var/image/daily",
     "raspistillOpts": [
     ],
-    "interval": "* * * * * *",
+    "interval": "* * * * *",
     "video": {
       "interval": "30 23 * * *",
       "savePath": "/var/image/daily-video",
