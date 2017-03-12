@@ -1,0 +1,28 @@
+{
+  "name": "pilapse",
+  "version": "1.0.0",
+  "description": "Configures a timelapse camera for a Raspberry Pi.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/pilapse",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/riggerthegeek/pilapse.git"
+  },
+  "author": "Simon Emms <simon@simonemms.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/riggerthegeek/pilapse/issues"
+  },
+  "homepage": "https://github.com/riggerthegeek/pilapse#readme",
+  "dependencies": {
+    "@steeplejack/data": "^1.0.1",
+    "mkdirp": "^0.5.1",
+    "moment": "^2.17.1",
+    "node-cron": "^1.1.3",
+    "request": "^2.81.0",
+    "request-promise-native": "^1.0.3"
+  }
+}

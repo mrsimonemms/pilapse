@@ -1,0 +1,12 @@
+{
+  "lat": 52.477683,
+  "long": -1.900441,
+  "schedule": [{
+    "startTime": "auto",
+    "endTime": "auto",
+    "savePath": "/opt/images/daily",
+    "raspistillOpts": [
+    ],
+    "interval": "* * * * *"
+  }]
+}
