@@ -1,9 +1,9 @@
-########################################
-# Docker                               #
-#                                      #
-# A NodeJS container that enables the  #
-# application to run                   #
-########################################
+############################################
+# Docker                                   #
+#                                          #
+# A container that enables the application #
+# to run                                   #
+############################################
 
 FROM alexellis2/raspistill:latest
 
