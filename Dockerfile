@@ -16,6 +16,8 @@ ENTRYPOINT []
 
 VOLUME /var/image
 
+ENV LOG_LEVEL=info
+
 # Install NodeJS and AVConv
 RUN apt-get update
 RUN apt-get -y install libav-tools curl

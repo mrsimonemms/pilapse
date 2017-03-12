@@ -3,10 +3,15 @@
   "long": -1.900441,
   "schedule": [{
     "startTime": "auto",
-    "endTime": "auto",
+    "endTime": "21:50",
     "savePath": "/var/image/daily",
     "raspistillOpts": [
     ],
-    "interval": "* * * * *"
+    "interval": "*/10 * * * * *",
+    "video": {
+      "interval": "51 21 * * *",
+      "savePath": "/var/image/daily-video",
+      "fileName": "daily.mp4"
+    }
   }]
 }

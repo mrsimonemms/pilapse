@@ -20,6 +20,7 @@
   "homepage": "https://github.com/riggerthegeek/pilapse#readme",
   "dependencies": {
     "@steeplejack/data": "^1.0.1",
+    "bunyan": "^1.8.8",
     "mkdirp": "^0.5.1",
     "moment": "^2.17.1",
     "node-cron": "^1.1.3",

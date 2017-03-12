@@ -4,6 +4,7 @@
 
 /* Node modules */
 const { exec } = require('child_process');
+const fs = require('fs');
 const path = require('path');
 
 /* Third-party modules */
@@ -53,18 +54,10 @@ module.exports = (config, sunriseSunset) => Promise.resolve()
 
     if ((times.startTime.getTime() <= now && times.endTime.getTime() >= now) === false) {
       /* Nothing to do */
-      return;
+      throw new Error('OUTSIDE_TIME');
     }
 
-    const savePath = [
-      config.savePath,
-      moment().get('year'),
-      moment().get('month'),
-      moment().get('date'),
-      moment().get('hour')
-    ].join(path.sep);
-
-    const fileName = `${savePath}${path.sep}${moment().get('minute')}_${now}.jpg`;
+    const savePath = config.savePath;
 
     return new Promise((resolve, reject) => {
       /* Create the path where the photos are to be stored */
@@ -76,7 +69,18 @@ module.exports = (config, sunriseSunset) => Promise.resolve()
 
         resolve();
       });
-    }).then(() => {
+    }).then(() => new Promise((resolve, reject) => {
+      fs.readdir(savePath, (err, files) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        resolve(files.length);
+      });
+    })).then(count => {
+      const fileName = `${savePath}${path.sep}${count}.jpg`;
+
       /* Set the options */
       const opts = (config.raspistillOpts || []).reduce((result, opt) => {
         result.push(opt);
