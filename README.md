@@ -17,5 +17,5 @@ For full instructions on installing Docker on a Raspberry Pi, take a look at
 ## Running the Image
 
 ```
-docker run --name pilapse -v /path/to/image/store:/var/image --privileged --restart=always -d pilapse
+docker run --name pilapse -v /path/to/image/store:/var/image -v $PWD/config.json:/opt/app/config.json --privileged --restart=always -d pilapse
 ```

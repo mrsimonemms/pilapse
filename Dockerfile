@@ -12,7 +12,9 @@ MAINTAINER Simon Emms <simon@simonemms.com>
 # Set the work directory and add the project files to it
 WORKDIR /opt/app
 ADD . /opt/app
-VOLUME [ /var/images ]
+ENTRYPOINT []
+
+VOLUME /var/image
 
 # Install NodeJS and AVConv
 RUN apt-get update

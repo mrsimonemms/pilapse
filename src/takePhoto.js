@@ -89,17 +89,23 @@ module.exports = (config, sunriseSunset) => {
       '-q 35',
       '-mm matrix',
       '-ex auto',
-      '-awb auto'
+      '-awb auto',
+      '-t 2000',
+      '-n',
     ]);
 
-    const cmd = `raspistill ${opts} -o ${fileName}`;
+    /* Create the command */
+    const cmd = `/opt/vc/bin/raspistill ${opts.join(' ')} -o ${fileName}`;
 
+    /* Execute the command to take the photo */
     return new Promise((resolve, reject) => {
-      exec(cmd, (err, stdout, stderr) => {
+      exec(cmd, (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
 
-        console.log(err);
-        process.exit();
-
+        resolve();
       });
     });
 

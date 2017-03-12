@@ -26,6 +26,13 @@ updateSunriseSunset()
   .then(sunriseSunset => {
     /* Set up the taking of photos */
     config.schedule.forEach((photo) => {
-      cron.schedule(photo.interval, () => takePhoto(photo, sunriseSunset), true);
+      cron.schedule(photo.interval, () => takePhoto(photo, sunriseSunset)
+        .then(() => {
+          console.log('then');
+        })
+        .catch(err => {
+          console.log(err);
+          console.log('err');
+        }), true);
     });
   });
