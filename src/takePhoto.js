@@ -88,8 +88,6 @@ module.exports = (config, sunriseSunset) => Promise.resolve()
         '-q 35',
         '-mm matrix',
         '-ex auto',
-        '-awb auto',
-        '-t 2000',
         '-n'
       ]);
 
@@ -104,7 +102,7 @@ module.exports = (config, sunriseSunset) => Promise.resolve()
             return;
           }
 
-          resolve();
+          resolve(cmd);
         });
       });
     });
