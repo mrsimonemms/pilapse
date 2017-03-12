@@ -13,16 +13,15 @@ const moment = require('moment');
 /* Files */
 
 module.exports = (config, sunriseSunset) => {
-
   const map = {
     startTime: 'astronomicalTwilightBegin',
-    endTime: 'astronomicalTwilightEnd',
+    endTime: 'astronomicalTwilightEnd'
   };
 
   /* Are we inside the start/end times? */
   const times = {
     startTime: config.startTime,
-    endTime: config.endTime,
+    endTime: config.endTime
   };
 
   /* Ensure we have date objects for the start/end times */
@@ -61,7 +60,7 @@ module.exports = (config, sunriseSunset) => {
     moment().get('year'),
     moment().get('month'),
     moment().get('date'),
-    moment().get('hour'),
+    moment().get('hour')
   ].join(path.sep);
 
   const fileName = `${savePath}${path.sep}${moment().get('minute')}_${now}.jpg`;
@@ -77,7 +76,6 @@ module.exports = (config, sunriseSunset) => {
       resolve();
     });
   }).then(() => {
-
     /* Set the options */
     const opts = (config.raspistillOpts || []).reduce((result, opt) => {
       result.push(opt);
@@ -91,7 +89,7 @@ module.exports = (config, sunriseSunset) => {
       '-ex auto',
       '-awb auto',
       '-t 2000',
-      '-n',
+      '-n'
     ]);
 
     /* Create the command */
@@ -108,7 +106,5 @@ module.exports = (config, sunriseSunset) => {
         resolve();
       });
     });
-
   });
-
 };

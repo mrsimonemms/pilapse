@@ -11,60 +11,59 @@ const moment = require('moment');
 /* Files */
 
 module.exports = class SunriseSunset extends Model {
-
   _schema () {
     return {
       sunrise: {
-        type: 'date',
+        type: 'date'
       },
 
       sunset: {
-        type: 'date',
+        type: 'date'
       },
 
       noon: {
         type: 'date',
-        column: 'solar_noon',
+        column: 'solar_noon'
       },
 
       dayLength: {
         type: 'integer',
-        column: 'day_length',
+        column: 'day_length'
       },
 
       civilTwighlightBegin: {
         type: 'date',
-        column: 'civil_twilight_begin',
+        column: 'civil_twilight_begin'
       },
 
       civilTwighlightEnd: {
         type: 'date',
-        column: 'civil_twilight_end',
+        column: 'civil_twilight_end'
       },
 
       nauticalTwighlightBegin: {
         type: 'date',
-        column: 'nautical_twilight_begin',
+        column: 'nautical_twilight_begin'
       },
 
       nauticalTwighlightEnd: {
         type: 'date',
-        column: 'nautical_twilight_end',
+        column: 'nautical_twilight_end'
       },
 
       astronomicalTwilightBegin: {
         type: 'date',
-        column: 'astronomical_twilight_begin',
+        column: 'astronomical_twilight_begin'
       },
 
       astronomicalTwilightEnd: {
         type: 'date',
-        column: 'astronomical_twilight_end',
+        column: 'astronomical_twilight_end'
       },
 
       updated: {
         type: 'date'
-      },
+      }
 
     };
   }
@@ -83,5 +82,4 @@ module.exports = class SunriseSunset extends Model {
 
     return false;
   }
-
 };

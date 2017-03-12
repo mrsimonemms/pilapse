@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/pilapse",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run test:lint -s",
+    "test:lint": "semistandard"
   },
   "repository": {
     "type": "git",
@@ -24,5 +25,8 @@
     "node-cron": "^1.1.3",
     "request": "^2.81.0",
     "request-promise-native": "^1.0.3"
+  },
+  "devDependencies": {
+    "semistandard": "^10.0.0"
   }
 }
