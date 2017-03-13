@@ -14,7 +14,6 @@ const SunriseModel = require('../models/sunriseSunset');
 
 module.exports = (logger, savePath, lat = null, lng = null) => Promise.resolve()
   .then(() => {
-
     /* Search for cached times */
     let data = {};
     try {
@@ -84,5 +83,4 @@ module.exports = (logger, savePath, lat = null, lng = null) => Promise.resolve()
         });
       });
     });
-
   });

@@ -11,7 +11,6 @@ const moment = require('moment');
 /* Files */
 
 module.exports = class SunriseSunset extends Model {
-
   _schema () {
     return {
 
@@ -58,5 +57,4 @@ module.exports = class SunriseSunset extends Model {
 
     return false;
   }
-
 };

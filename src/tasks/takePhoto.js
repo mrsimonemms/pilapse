@@ -14,7 +14,6 @@ const moment = require('moment');
 
 module.exports = (logger, config, sunriseSunset) => Promise.resolve()
   .then(() => {
-
     if (config.disabled) {
       /* Task has been disabled */
       throw new Error('TASK_DISABLED');
@@ -55,7 +54,7 @@ module.exports = (logger, config, sunriseSunset) => Promise.resolve()
       logger.info({
         code: 'NOPHOTOSCHEDULED',
         now: new Date(now),
-        times,
+        times
       }, 'No photo scheduled to be taken');
 
       return;
@@ -79,7 +78,6 @@ module.exports = (logger, config, sunriseSunset) => Promise.resolve()
         resolve();
       });
     }).then(() => {
-
       const fileName = [
         savePath,
         `img_${now}.jpg`

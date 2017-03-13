@@ -26,7 +26,7 @@ const logger = bunyan.createLogger({
   streams: [{
     stream: process.stdout,
     level: process.env.LOG_LEVEL
-  }],
+  }]
 });
 
 logger.info({
@@ -43,7 +43,6 @@ config.schedule.forEach(({
  twitter = {disabled: true},
  video = {disabled: true}
 }) => {
-
   /* Schedule the update of sunrise/sunset and taking of the photo */
   cron.schedule(photo.interval, () => sunriseSunset(logger, sunriseTimes, config.lat, config.long)
     .then(times => takePhoto(logger, photo, times)));
@@ -54,5 +53,4 @@ config.schedule.forEach(({
     `${photo.savePath}/**/*.*`,
     `${video.savePath}/**/*.*`
   ));
-
 });

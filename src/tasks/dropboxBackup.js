@@ -7,7 +7,6 @@ const fs = require('fs');
 const path = require('path');
 
 /* Third-party modules */
-const _ = require('lodash');
 const Dropbox = require('dropbox');
 const glob = require('glob');
 
@@ -28,7 +27,7 @@ function upload (config, localPath) {
       }
 
       resolve(contents);
-    })
+    });
   }).then(contents => dbx.filesUpload({
     path: remotePath,
     contents,
@@ -59,13 +58,14 @@ function uploadFiles (config, str) {
   }).then(files => Promise.all(files.map(file => upload(config, file))));
 }
 
-module.exports = (config, photoPath, videoPath) => {
-  if (config.disabled) {
-    return Promise.reject('NO_DROPBOX_BACKUP');
-  }
+module.exports = (config, photoPath, videoPath) => Promise.resolve()
+  .then(() => {
+    if (config.disabled) {
+      return;
+    }
 
-  return Promise.all([
-    uploadFiles(config, photoPath),
-    uploadFiles(config, videoPath)
-  ]);
-};
+    return Promise.all([
+      uploadFiles(config, photoPath),
+      uploadFiles(config, videoPath)
+    ]);
+  });
