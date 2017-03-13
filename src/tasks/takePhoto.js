@@ -4,32 +4,26 @@
 
 /* Node modules */
 const { exec } = require('child_process');
-const fs = require('fs');
 const path = require('path');
 
 /* Third-party modules */
-const _ = require('lodash');
 const mkdirp = require('mkdirp');
 const moment = require('moment');
 
 /* Files */
 
-module.exports = (config, sunriseSunset) => Promise.resolve()
+module.exports = (logger, config, sunriseSunset) => Promise.resolve()
   .then(() => {
+
     if (config.disabled) {
       /* Task has been disabled */
       throw new Error('TASK_DISABLED');
     }
 
-    const map = {
-      startTime: 'nauticalTwighlightBegin',
-      endTime: 'nauticalTwighlightEnd'
-    };
-
     /* Are we inside the start/end times? */
     const times = {
-      startTime: config.startTime,
-      endTime: config.endTime
+      sunrise: config.startTime,
+      sunset: config.endTime
     };
 
     /* Ensure we have date objects for the start/end times */
@@ -38,9 +32,7 @@ module.exports = (config, sunriseSunset) => Promise.resolve()
 
       if (!time) {
         /* Getting time from the sunrise/sunset */
-        const target = map[key];
-
-        times[key] = sunriseSunset.get(target);
+        times[key] = sunriseSunset.get(key);
       } else {
         /* Converting time to Date */
         const split = time.split(':');
@@ -58,16 +50,27 @@ module.exports = (config, sunriseSunset) => Promise.resolve()
 
     const now = Date.now();
 
-    if ((times.startTime.getTime() <= now && times.endTime.getTime() >= now) === false) {
+    if ((times.sunrise.getTime() <= now && times.sunset.getTime() >= now) === false) {
       /* Nothing to do */
-      throw new Error('OUTSIDE_TIME');
+      logger.info({
+        code: 'NOPHOTOSCHEDULED',
+        now: new Date(now),
+        times,
+      }, 'No photo scheduled to be taken');
+
+      return;
     }
 
     const savePath = config.savePath;
 
     return new Promise((resolve, reject) => {
       /* Create the path where the photos are to be stored */
-      mkdirp(savePath, (err) => {
+      logger.info({
+        savePath,
+        code: 'DIRCREATE'
+      }, 'Creating some directories');
+
+      mkdirp(savePath, err => {
         if (err) {
           reject(err);
           return;
@@ -75,18 +78,12 @@ module.exports = (config, sunriseSunset) => Promise.resolve()
 
         resolve();
       });
-    }).then(() => new Promise((resolve, reject) => {
-      fs.readdir(savePath, (err, files) => {
-        if (err) {
-          reject(err);
-          return;
-        }
+    }).then(() => {
 
-        resolve(files.length);
-      });
-    })).then(count => {
-      const name = _.padStart(count, 10, '0');
-      const fileName = `${savePath}${path.sep}${name}.jpg`;
+      const fileName = [
+        savePath,
+        `img_${now}.jpg`
+      ].join(path.sep);
 
       /* Set the options */
       const opts = (config.raspistillOpts || []).reduce((result, opt) => {
@@ -105,6 +102,11 @@ module.exports = (config, sunriseSunset) => Promise.resolve()
       /* Create the command */
       const cmd = `/opt/vc/bin/raspistill ${opts.join(' ')} -o ${fileName}`;
 
+      logger.info({
+        cmd,
+        code: 'NEWPHOTO'
+      }, 'Photo being taken');
+
       /* Execute the command to take the photo */
       return new Promise((resolve, reject) => {
         exec(cmd, (err) => {
@@ -112,6 +114,10 @@ module.exports = (config, sunriseSunset) => Promise.resolve()
             reject(err);
             return;
           }
+
+          logger.info({
+            cmd: 'NEWPHOTOSUCCESS'
+          }, 'Photo successfully taken');
 
           resolve({
             cmd,

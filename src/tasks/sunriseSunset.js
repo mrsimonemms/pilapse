@@ -6,62 +6,83 @@
 const fs = require('fs');
 
 /* Third-party modules */
-const request = require('request-promise-native');
+const _ = require('lodash');
 
 /* Files */
-const SunriseModel = require('./models/sunriseSunset');
+const request = require('../lib/request');
+const SunriseModel = require('../models/sunriseSunset');
 
-module.exports = (lat, lng, savePath) => Promise.resolve()
+module.exports = (logger, savePath, lat = null, lng = null) => Promise.resolve()
   .then(() => {
-    /* Search for exiting times */
+
+    /* Search for cached times */
     let data = {};
     try {
       /* Use fs - require will cache the file contents */
       data = JSON.parse(fs.readFileSync(savePath, 'utf8'));
+
+      logger.info({
+        code: 'SSFOUND'
+      }, 'Cached sunrise/sunset times found');
     } catch (err) {
       /* File not yet generated */
+      logger.info({
+        code: 'SSNOTFOUND'
+      }, 'Cached sunrise/sunset times not found');
     }
 
     const times = new SunriseModel(data);
 
     /* If not updated today, update again */
-    if (times.isUpdatedToday()) {
-      /* Return the saved version */
-      return {
-        updated: false,
-        times
-      };
-    } else {
-      /* Update the sunrise/sunset times */
-      return request({
-        uri: 'http://api.sunrise-sunset.org/json',
-        qs: {
-          lat,
-          lng,
-          formatted: 0
-        },
-        json: true
-      }).then(({ results }) => {
-        /* Save the times */
-        const obj = SunriseModel.toModel(results);
+    if (times.isUpdatedToday() || !_.isNumber(lat) || !_.isNumber(lng)) {
+      /* Return the saved/default version */
+      logger.info({
+        data: times.getData(),
+        code: 'SSCACHED'
+      }, 'Using cached sunrise/sunset times');
 
+      return times;
+    }
+
+    logger.info({
+      code: 'SSUPDATING'
+    }, 'Cached sunrise/sunset times to be updated');
+
+    /* Update the sunrise/sunset times */
+    return request({
+      uri: 'http://api.sunrise-sunset.org/json',
+      qs: {
+        lat,
+        lng,
+        formatted: 0
+      },
+      json: true
+    }).then(({ results } = {}) => {
+      /* Save the times */
+      const obj = SunriseModel.toModel(results);
+
+      /* Only add save time if there's a result */
+      if (results) {
         obj.set('updated', new Date());
+      }
 
-        return new Promise((resolve, reject) => {
-          const data = JSON.stringify(obj.getData(), null, 2);
+      return new Promise((resolve, reject) => {
+        const data = JSON.stringify(obj.getData(), null, 2);
 
-          fs.writeFile(savePath, data, 'utf8', (err) => {
-            if (err) {
-              reject(err);
-              return;
-            }
+        fs.writeFile(savePath, data, 'utf8', (err) => {
+          if (err) {
+            reject(err);
+            return;
+          }
 
-            resolve({
-              updated: true,
-              times: obj
-            });
-          });
+          logger.info({
+            data: obj.getData(),
+            code: 'SSUPDATED'
+          }, 'Cached sunrise/sunset times updated');
+
+          resolve(obj);
         });
       });
-    }
+    });
+
   });

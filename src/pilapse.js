@@ -15,11 +15,11 @@ const cron = require('node-cron');
 
 /* Files */
 const config = require('../config.json');
-const generateVideo = require('./generateVideo');
-const sunriseSunset = require('./sunriseSunset');
-const takePhoto = require('./takePhoto');
-
-const sunriseTimes = path.join(__dirname, '..', 'sunriseSunset.json');
+const dropboxBackup = require('./tasks/dropboxBackup');
+// const generateVideo = require('./tasks/generateVideo');
+const sunriseSunset = require('./tasks/sunriseSunset');
+const takePhoto = require('./tasks/takePhoto');
+// const tweetVideo = require('./tasks/tweetVideo');
 
 const logger = bunyan.createLogger({
   name: 'pilapse',
@@ -29,50 +29,23 @@ const logger = bunyan.createLogger({
   }],
 });
 
-logger.info('PiLapse started');
+logger.info({
+  config,
+  code: 'PLSTART'
+}, 'PiLapse started');
 
-const updateSunriseSunset = () => {
-  logger.info('Querying the sunrise/sunset times');
+const sunriseTimes = path.join(__dirname, '..', 'sunriseSunset.json');
 
-  return sunriseSunset(config.lat, config.long, sunriseTimes)
-    .then(result => {
-      logger.info('Sunrise/sunset times retrieved', result.getData());
+/* Set up the user's jobs */
+config.schedule.forEach(({
+ dropbox = {disabled: true},
+ photo = {disabled: true},
+ twitter = {disabled: true},
+ video = {disabled: true}
+}) => {
 
-      return result;
-    })
-    .catch(err => {
-      logger.error('Failed to retrieve sunrise/sunset times', err);
-    });
-};
+  /* Schedule the update of sunrise/sunset and taking of the photo */
+  cron.schedule(photo.interval, () => sunriseSunset(logger, sunriseTimes, config.lat, config.long)
+    .then(times => takePhoto(logger, photo, times)));
 
-/* Before starting, get the sunrise sunset */
-updateSunriseSunset()
-  .then(sunriseSunset => {
-    /* Set up the user's jobs */
-    config.schedule.forEach((photo) => {
-      /* Set up the photo taking intervals */
-      cron.schedule(photo.interval, () => takePhoto(photo, sunriseSunset)
-        .then(result => {
-          logger.info('New photo taken with command:', result);
-        })
-        .catch(err => {
-          if (err.message === 'OUTSIDE_TIME') {
-            logger.info('No photo scheduled to be taken');
-          } else {
-            logger.error('Failed to take photo', err);
-          }
-        }));
-
-      /* Generate the video */
-      cron.schedule(photo.video.interval, () => generateVideo(photo)
-        .then(result => {
-          logger.info('New video generated', result);
-        })
-        .catch(err => {
-          logger.error('Failed to generate video', err);
-        }));
-    });
-
-    /* Set up the daily check to get the sunrise/sunset times */
-    cron.schedule('0 0 * * *', updateSunriseSunset);
-  });
+});
