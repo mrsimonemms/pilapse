@@ -9,25 +9,16 @@ const path = require('path');
 /* Third-party modules */
 const _ = require('lodash');
 const Dropbox = require('dropbox');
+const glob = require('glob');
 
 /* Files */
 
-function dropboxBackup (config, localPath, folder = '') {
-  if (config.disabled) {
-    return Promise.reject('NO_DROPBOX_BACKUP');
-  }
-
-  /* Allow multiple files */
-  if (_.isArray(localPath)) {
-    return Promise.all(localPath.map(file => dropboxBackup(config, file, folder)));
-  }
-
+function upload (config, localPath) {
   const dbx = new Dropbox({
     accessToken: config.accessToken
   });
 
-  const obj = path.parse(localPath);
-  const remotePath = path.join(config.savePath, folder, obj.base);
+  const remotePath = path.join(config.savePath, localPath);
 
   return new Promise((resolve, reject) => {
     fs.readFile(localPath, (err, contents) => {
@@ -43,7 +34,38 @@ function dropboxBackup (config, localPath, folder = '') {
     contents,
     autorename: true,
     mute: true
-  }));
-};
+  })).then(result => new Promise((resolve, reject) => {
+    fs.unlink(localPath, err => {
+      if (err) {
+        reject(err);
+        return;
+      }
 
-module.exports = dropboxBackup;
+      resolve(result);
+    });
+  }));
+}
+
+function uploadFiles (config, str) {
+  return new Promise((resolve, reject) => {
+    glob(str, (err, files) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      resolve(files);
+    });
+  }).then(files => Promise.all(files.map(file => upload(config, file))));
+}
+
+module.exports = (config, photoPath, videoPath) => {
+  if (config.disabled) {
+    return Promise.reject('NO_DROPBOX_BACKUP');
+  }
+
+  return Promise.all([
+    uploadFiles(config, photoPath),
+    uploadFiles(config, videoPath)
+  ]);
+};

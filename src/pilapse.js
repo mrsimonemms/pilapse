@@ -48,4 +48,11 @@ config.schedule.forEach(({
   cron.schedule(photo.interval, () => sunriseSunset(logger, sunriseTimes, config.lat, config.long)
     .then(times => takePhoto(logger, photo, times)));
 
+  /* Schedule the backup of the photos to dropbox */
+  cron.schedule(dropbox.interval, () => dropboxBackup(
+    dropbox,
+    `${photo.savePath}/**/*.*`,
+    `${video.savePath}/**/*.*`
+  ));
+
 });

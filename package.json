@@ -22,6 +22,7 @@
     "@steeplejack/data": "^1.0.1",
     "bunyan": "^1.8.8",
     "dropbox": "^2.5.2",
+    "glob": "^7.1.1",
     "lodash": "^4.17.4",
     "mkdirp": "^0.5.1",
     "moment": "^2.17.1",
