@@ -19,17 +19,16 @@ VOLUME /var/image
 ENV LOG_LEVEL=info
 
 # Install NodeJS and AVConv
-RUN apt-get update
-RUN apt-get -y install libav-tools curl
-RUN curl https://nodejs.org/dist/v6.10.0/node-v6.10.0-linux-$(uname -m).tar.xz -o /tmp/nodejs.tar.xz
-RUN tar -xf /tmp/nodejs.tar.xz -C /tmp
-RUN mv /tmp/node-v6.10.0-linux-$(uname -m) /opt/nodejs
-RUN ln -s /opt/nodejs/bin/node /usr/bin/node
-RUN ln -s /opt/nodejs/bin/npm /usr/bin/npm
-RUN echo "node version: $(node --version)"
-RUN echo "npm version: $(npm --version)"
-
-RUN npm install --production
+RUN apt-get update && \
+  apt-get -y install libav-tools curl && \
+  curl https://nodejs.org/dist/v6.10.0/node-v6.10.0-linux-$(uname -m).tar.xz -o /tmp/nodejs.tar.xz && \
+  tar -xf /tmp/nodejs.tar.xz -C /tmp && \
+  mv /tmp/node-v6.10.0-linux-$(uname -m) /opt/nodejs && \
+  ln -s /opt/nodejs/bin/node /usr/bin/node && \
+  ln -s /opt/nodejs/bin/npm /usr/bin/npm && \
+  echo "node version: $(node --version)" && \
+  echo "npm version: $(npm --version)" && \
+  npm install --production
 
 # Run run run
 CMD npm start
