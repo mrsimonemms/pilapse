@@ -14,17 +14,23 @@ const SunriseModel = require('./models/sunriseSunset');
 module.exports = (lat, lng, savePath) => Promise.resolve()
   .then(() => {
     /* Search for exiting times */
-    let times = new SunriseModel();
+    let data = {};
     try {
-      times = new SunriseModel(require(savePath));
+      /* Use fs - require will cache the file contents */
+      data = JSON.parse(fs.readFileSync(savePath, 'utf8'));
     } catch (err) {
       /* File not yet generated */
     }
 
+    const times = new SunriseModel(data);
+
     /* If not updated today, update again */
     if (times.isUpdatedToday()) {
       /* Return the saved version */
-      return times;
+      return {
+        updated: false,
+        times
+      };
     } else {
       /* Update the sunrise/sunset times */
       return request({
@@ -50,7 +56,10 @@ module.exports = (lat, lng, savePath) => Promise.resolve()
               return;
             }
 
-            resolve(obj);
+            resolve({
+              updated: true,
+              times: obj
+            });
           });
         });
       });

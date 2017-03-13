@@ -8,6 +8,7 @@ const fs = require('fs');
 const path = require('path');
 
 /* Third-party modules */
+const _ = require('lodash');
 const mkdirp = require('mkdirp');
 const moment = require('moment');
 
@@ -15,6 +16,11 @@ const moment = require('moment');
 
 module.exports = (config, sunriseSunset) => Promise.resolve()
   .then(() => {
+    if (config.disabled) {
+      /* Task has been disabled */
+      throw new Error('TASK_DISABLED');
+    }
+
     const map = {
       startTime: 'nauticalTwighlightBegin',
       endTime: 'nauticalTwighlightEnd'
@@ -30,7 +36,7 @@ module.exports = (config, sunriseSunset) => Promise.resolve()
     for (const key in times) {
       const time = times[key];
 
-      if (time === 'auto') {
+      if (!time) {
         /* Getting time from the sunrise/sunset */
         const target = map[key];
 
@@ -79,7 +85,8 @@ module.exports = (config, sunriseSunset) => Promise.resolve()
         resolve(files.length);
       });
     })).then(count => {
-      const fileName = `${savePath}${path.sep}${count}.jpg`;
+      const name = _.padStart(count, 10, '0');
+      const fileName = `${savePath}${path.sep}${name}.jpg`;
 
       /* Set the options */
       const opts = (config.raspistillOpts || []).reduce((result, opt) => {
@@ -106,7 +113,10 @@ module.exports = (config, sunriseSunset) => Promise.resolve()
             return;
           }
 
-          resolve(cmd);
+          resolve({
+            cmd,
+            fileName
+          });
         });
       });
     });
