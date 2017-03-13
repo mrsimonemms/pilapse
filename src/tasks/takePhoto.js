@@ -61,7 +61,7 @@ module.exports = (logger, config, sunriseSunset) => Promise.resolve()
       return;
     }
 
-    const savePath = config.savePath;
+    const savePath = `${config.savePath}/${moment().format('YYYY-MM-DD')}`;
 
     return new Promise((resolve, reject) => {
       /* Create the path where the photos are to be stored */
