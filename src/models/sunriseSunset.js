@@ -22,7 +22,7 @@ module.exports = class SunriseSunset extends Model {
           second: 0,
           millisecond: 0
         }).toDate(),
-        column: 'nautical_twilight_begin'
+        column: 'civil_twilight_begin'
       },
 
       sunset: {
@@ -33,7 +33,7 @@ module.exports = class SunriseSunset extends Model {
           second: 0,
           millisecond: 0
         }).toDate(),
-        column: 'nautical_twilight_end'
+        column: 'civil_twilight_end'
       },
 
       updated: {
