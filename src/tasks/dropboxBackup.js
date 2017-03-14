@@ -45,7 +45,7 @@ function upload (config, localPath) {
   }));
 }
 
-function uploadFiles (config, str) {
+function getFiles (str) {
   return new Promise((resolve, reject) => {
     glob(str, (err, files) => {
       if (err) {
@@ -55,17 +55,36 @@ function uploadFiles (config, str) {
 
       resolve(files);
     });
-  }).then(files => Promise.all(files.map(file => upload(config, file))));
+  });
 }
 
-module.exports = (config, photoPath, videoPath) => Promise.resolve()
+module.exports = (logger, config, photoPath, videoPath) => Promise.resolve()
   .then(() => {
     if (config.disabled) {
       return;
     }
 
+    /* Get the files */
     return Promise.all([
-      uploadFiles(config, photoPath),
-      uploadFiles(config, videoPath)
-    ]);
+      getFiles(photoPath),
+      getFiles(videoPath)
+    ]).then(([ photos, videos ]) => {
+      const uploads = []
+        .concat(photos)
+        .concat(videos);
+
+      const pause = 10000;
+
+      return uploads.reduce((thenable, file) => thenable
+        .then(() => upload(config, file))
+        .then(() => {
+          logger.info({
+            file,
+            pause,
+            code: 'DROPBOXUPLOAD'
+          }, 'Uploaded file to Dropbox, now pausing');
+
+          return new Promise(resolve => setTimeout(resolve, pause));
+        }), Promise.resolve());
+    });
   });
