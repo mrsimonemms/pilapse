@@ -45,12 +45,20 @@ config.schedule.forEach(({
 }) => {
   /* Schedule the update of sunrise/sunset and taking of the photo */
   cron.schedule(photo.interval, () => sunriseSunset(logger, sunriseTimes, config.lat, config.long)
-    .then(times => takePhoto(logger, photo, times)));
+    .then(times => takePhoto(logger, photo, times))
+    .catch(err => logger.error({
+      err,
+      code: 'PHOTOERROR'
+    }, 'Uncaught exception whilst taking a photo')));
 
   /* Schedule the backup of the photos to dropbox */
   cron.schedule(dropbox.interval, () => dropboxBackup(
+    logger,
     dropbox,
     `${photo.savePath}/**/*.*`,
     `${video.savePath}/**/*.*`
-  ));
+  ).catch(err => logger.error({
+    err,
+    code: 'DROPBOXERROR'
+  }, 'Uncaught exception whilst uploading to Dropbox')));
 });
