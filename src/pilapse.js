@@ -43,7 +43,7 @@ const db = new Database('./pilapse.sql', logger);
 
 const files = new FilesStore(db);
 
-return Promise.all([
+Promise.all([
   files.createTable()
 ]).then(() => {
   /* Set up the user's jobs */

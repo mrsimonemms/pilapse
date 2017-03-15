@@ -34,7 +34,7 @@ module.exports = class FileStore {
     let sql = '';
     let inserts = [];
 
-    const isUpdate = _.has(data, "id") && data.id;
+    const isUpdate = _.has(data, 'id') && data.id;
 
     if (isUpdate) {
       /* Updating the record */

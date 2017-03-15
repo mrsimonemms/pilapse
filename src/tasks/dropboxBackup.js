@@ -39,7 +39,7 @@ function upload (db, config, file) {
 
     return db.save(file)
       .then(() => result);
-  })
+  });
 }
 
 module.exports = (logger, db, config, photoPath, videoPath) => Promise.resolve()
@@ -52,8 +52,7 @@ module.exports = (logger, db, config, photoPath, videoPath) => Promise.resolve()
     return Promise.all([
       db.getFilesToUpload(photoPath),
       db.getFilesToUpload(videoPath)
-    ]).then(([ photos , videos ]) => {
-
+    ]).then(([ photos, videos ]) => {
       const uploads = []
         .concat(photos)
         .concat(videos);
