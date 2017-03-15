@@ -50,9 +50,9 @@ module.exports = (logger, db, config, photoPath, videoPath) => Promise.resolve()
 
     /* Get the files */
     return Promise.all([
-      db.getFilesList(photoPath),
-      // db.getFilesList(videoPath)
-    ]).then(([ photos = [], videos = [] ]) => {
+      db.getFilesToUpload(photoPath),
+      db.getFilesToUpload(videoPath)
+    ]).then(([ photos , videos ]) => {
 
       const uploads = []
         .concat(photos)
