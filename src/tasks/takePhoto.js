@@ -136,13 +136,12 @@ module.exports = (logger, db, config, sunriseSunset) => Promise.resolve()
             fileName
           });
         });
-      }).then(({ cmd, fileName }) => {
-        return db.save({
-          fileName
-        }).then(() => ({
-          cmd,
-          fileName
-        }));
-      });
+      }).then(({ cmd, fileName }) => db.save({
+        type: 'img',
+        fileName
+      }).then(() => ({
+        cmd,
+        fileName
+      })));
     });
   });
