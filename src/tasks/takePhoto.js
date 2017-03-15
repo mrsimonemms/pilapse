@@ -12,7 +12,7 @@ const moment = require('moment');
 
 /* Files */
 
-module.exports = (logger, config, sunriseSunset) => Promise.resolve()
+module.exports = (logger, db, config, sunriseSunset) => Promise.resolve()
   .then(() => {
     if (config.disabled) {
       /* Task has been disabled */
@@ -60,7 +60,21 @@ module.exports = (logger, config, sunriseSunset) => Promise.resolve()
       return;
     }
 
-    const savePath = `${config.savePath}/${moment().format('YYYY-MM-DD')}`;
+    /* Allowed values are Y, M or D */
+    const group = config.group || 'D';
+
+    /* Default to daily */
+    let groupFormat = 'YYYY-MM-DD';
+    if (group === 'Y') {
+      groupFormat = 'YYYY';
+    } else if (group === 'M') {
+      groupFormat = 'YYYY-MM';
+    }
+
+    const savePath = [
+      config.savePath,
+      moment().format(groupFormat)
+    ].join(path.sep);
 
     return new Promise((resolve, reject) => {
       /* Create the path where the photos are to be stored */
@@ -122,6 +136,13 @@ module.exports = (logger, config, sunriseSunset) => Promise.resolve()
             fileName
           });
         });
+      }).then(({ cmd, fileName }) => {
+        return db.save({
+          fileName
+        }).then(() => ({
+          cmd,
+          fileName
+        }));
       });
     });
   });

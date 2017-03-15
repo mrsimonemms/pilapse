@@ -8,19 +8,20 @@ const path = require('path');
 
 /* Third-party modules */
 const Dropbox = require('dropbox');
-const glob = require('glob');
 
 /* Files */
 
-function upload (config, localPath) {
+function upload (db, config, file) {
   const dbx = new Dropbox({
     accessToken: config.accessToken
   });
 
-  const remotePath = path.join(config.savePath, localPath);
+  const { fileName } = file;
+
+  const remotePath = path.join(config.savePath, fileName);
 
   return new Promise((resolve, reject) => {
-    fs.readFile(localPath, (err, contents) => {
+    fs.readFile(fileName, (err, contents) => {
       if (err) {
         reject(err);
         return;
@@ -33,32 +34,15 @@ function upload (config, localPath) {
     contents,
     autorename: true,
     mute: true
-  })).then(result => new Promise((resolve, reject) => {
-    fs.unlink(localPath, err => {
-      if (err) {
-        reject(err);
-        return;
-      }
+  })).then(result => {
+    file.uploaded = 1;
 
-      resolve(result);
-    });
-  }));
+    return db.save(file)
+      .then(() => result);
+  })
 }
 
-function getFiles (str) {
-  return new Promise((resolve, reject) => {
-    glob(str, (err, files) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-
-      resolve(files);
-    });
-  });
-}
-
-module.exports = (logger, config, photoPath, videoPath) => Promise.resolve()
+module.exports = (logger, db, config, photoPath, videoPath) => Promise.resolve()
   .then(() => {
     if (config.disabled) {
       return;
@@ -66,9 +50,10 @@ module.exports = (logger, config, photoPath, videoPath) => Promise.resolve()
 
     /* Get the files */
     return Promise.all([
-      getFiles(photoPath),
-      getFiles(videoPath)
-    ]).then(([ photos, videos ]) => {
+      db.getFilesList(photoPath),
+      // db.getFilesList(videoPath)
+    ]).then(([ photos = [], videos = [] ]) => {
+
       const uploads = []
         .concat(photos)
         .concat(videos);
@@ -76,7 +61,7 @@ module.exports = (logger, config, photoPath, videoPath) => Promise.resolve()
       const pause = 10000;
 
       return uploads.reduce((thenable, file) => thenable
-        .then(() => upload(config, file))
+        .then(() => upload(db, config, file))
         .then(() => {
           logger.info({
             file,

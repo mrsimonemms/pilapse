@@ -47,8 +47,7 @@ module.exports = (logger, savePath, lat = null, lng = null) => Promise.resolve()
       code: 'SSUPDATING'
     }, 'Cached sunrise/sunset times to be updated');
 
-    /* Update the sunrise/sunset times */
-    return request({
+    const opts = {
       uri: 'http://api.sunrise-sunset.org/json',
       qs: {
         lat,
@@ -56,13 +55,21 @@ module.exports = (logger, savePath, lat = null, lng = null) => Promise.resolve()
         formatted: 0
       },
       json: true
-    }).then(({ results } = {}) => {
+    };
+
+    /* Update the sunrise/sunset times */
+    return request(opts).then(({ results } = {}) => {
       /* Save the times */
       const obj = SunriseModel.toModel(results);
 
-      /* Only add save time if there's a result */
+      /* Only add save time if there's a result from API */
       if (results) {
         obj.set('updated', new Date());
+      } else {
+        logger.warn({
+          code: 'SSFAIL',
+          opts
+        }, 'Failed to make API call');
       }
 
       return new Promise((resolve, reject) => {
