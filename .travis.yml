@@ -3,15 +3,4 @@ language: node_js
 node_js:
   - '6'
 
-sudo: required
-
-services:
-  - docker
-
-deploy:
-  provider: script
-  script: ./deploy.sh
-  skip_cleanup: true
-  on:
-    tags: true
-    repo: riggerthegeek/pilapse
+sudo: false

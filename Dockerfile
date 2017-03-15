@@ -18,9 +18,9 @@ VOLUME /var/image
 
 ENV LOG_LEVEL=info
 
-# Install NodeJS and AVConv
+# Install NodeJS, Python and AVConv
 RUN apt-get update && \
-  apt-get -y install libav-tools curl python && \
+  apt-get -y install libav-tools curl python make && \
   curl https://nodejs.org/dist/v6.10.0/node-v6.10.0-linux-$(uname -m).tar.xz -o /tmp/nodejs.tar.xz && \
   tar -xf /tmp/nodejs.tar.xz -C /tmp && \
   mv /tmp/node-v6.10.0-linux-$(uname -m) /opt/nodejs && \
