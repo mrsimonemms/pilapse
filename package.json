@@ -4,6 +4,7 @@
   "description": "Configures a timelapse camera for a Raspberry Pi.",
   "main": "index.js",
   "scripts": {
+    "postversion": "git push --tags && git push",
     "start": "node src/pilapse",
     "test": "npm run test:lint -s",
     "test:lint": "semistandard"
