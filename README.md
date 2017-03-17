@@ -22,9 +22,12 @@ For full instructions on installing Docker on a Raspberry Pi, take a look at
 
 ## Running the Image
 
+> View on [Docker Hub](https://hub.docker.com/r/riggerthegeek/pilapse/)
+
 There are two optional volumes:
  - `/opt/app/config.json`: the config file. You will probably want to set your own config.
  - `/var/image`: the image store. If you want to have the images stored on your Pi, you will need to do this.
+
 
 ```
 docker run --name pilapse -v /path/to/image/store:/var/image -v $PWD/config.json:/opt/app/config.json --privileged --restart=always -d riggerthegeek/pilapse:$(uname -m)
