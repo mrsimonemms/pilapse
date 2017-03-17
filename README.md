@@ -44,7 +44,7 @@ The config allows granular control over the timelapse pictures and videos.
   "lat": 52.482154,
   "long": -1.894503,
   "schedule": [{
-    "config": {
+    "cleanup": {
       "disabled": false,
       "interval": "* */6 * * *"
     },
