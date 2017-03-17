@@ -2,8 +2,14 @@
 
 Configures a timelapse camera for a Raspberry Pi.
 
-> This is based on an idea by [Alex Ellis](http://blog.alexellis.io/raspberry-pi-timelapse). This container has a couple
-> of additions, including getting sunrise/sunset times, backup to Dropbox and generation and tweeting of a video.
+## Features
+
+ - Use sunrise/sunset times for your location to decide when to record
+ - Automatically generate a video from the images
+ - Backup images/videos to Dropbox
+ - Automatically tweet the video once generated
+
+> This is based on an idea by [Alex Ellis](http://blog.alexellis.io/raspberry-pi-timelapse)
 >
 > This uses [Sunrise Sunset](http://sunrise-sunset.org/api) to calculate when it's daylight
 
@@ -32,8 +38,8 @@ The config allows granular control over the timelapse pictures and videos.
 
 ```json
 {
-  "lat": 51.951661,
-  "long": -2.057862,
+  "lat": 52.482154,
+  "long": -1.894503,
   "schedule": [{
     "config": {
       "disabled": false,
