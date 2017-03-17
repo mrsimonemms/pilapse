@@ -30,6 +30,13 @@ module.exports = class FileStore {
     ]);
   }
 
+  getDeadFiles () {
+    return this._db.query('SELECT * FROM files WHERE generated = ? AND uploaded = ?', [
+      1,
+      1
+    ]);
+  }
+
   getGroups () {
     return this._db.query('SELECT DISTINCT `group` FROM files WHERE generated = ? ORDER BY created ASC', [
       0

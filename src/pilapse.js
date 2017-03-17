@@ -16,6 +16,7 @@ const { v4 } = require('uuid');
 
 /* Files */
 const config = require('../config.json');
+const cleanupData = require('./tasks/cleanup');
 const Database = require('./lib/database');
 const dropboxBackup = require('./tasks/dropboxBackup');
 const FilesStore = require('./store/files');
@@ -86,6 +87,7 @@ Promise.all([
 ]).then(() => {
   /* Set up the user's jobs */
   config.schedule.forEach(({
+    cleanup = { disabled: true },
     dropbox = { disabled: true },
     photo = { disabled: true },
     twitter = { disabled: true },
@@ -110,8 +112,13 @@ Promise.all([
 
     /* Generate the video */
     cron.schedule(video.interval, () => {
-      taskRunner(id, 'VIDEOGENERATE', 'GENERATE_VIDEO', () => generateVideo(files, photo, video));
+      taskRunner(id, 'VIDEOGENERATE', 'GENERATE_VIDEO', () => generateVideo(files, video));
     });
+
+    /* Cleanup uploaded/generated data */
+    cron.schedule(cleanup.interval, () => {
+      taskRunner(id, 'DATACLEANUP', 'CLEANUP_OLD_DATA', () => cleanupData(files, cleanup));
+    })
   });
 }).catch(err => {
   logger.error({

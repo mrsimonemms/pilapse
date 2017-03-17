@@ -54,7 +54,7 @@ const generateGroupVideo = (db, group, tmpPath, cmd) => db
     });
   });
 
-module.exports = (db, photo, video) => Promise.resolve()
+module.exports = (db, video) => Promise.resolve()
   .then(() => {
     if (video.disabled) {
       /* Task not scheduled to run */
