@@ -3,3 +3,4 @@
 /sunriseSunset.json
 node_modules
 pilapse.sql
+*.log

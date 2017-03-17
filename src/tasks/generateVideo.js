@@ -8,55 +8,86 @@ const os = require('os');
 const path = require('path');
 
 /* Third-party modules */
+const fs = require('fs-extra');
 const mkdirp = require('mkdirp');
 const moment = require('moment');
-const mv = require('mv');
 const rimraf = require('rimraf');
 const uuid = require('uuid');
 
 /* Files */
 
-const promiseCb = (resolve, reject) => err => {
-  if (err) {
-    reject(err);
-    return;
-  }
+function promiseCb (resolve, reject) {
+  return (err, result) => {
+    if (err) {
+      reject(err);
+      return;
+    }
 
-  resolve();
-};
+    if (result === undefined) {
+      resolve();
+    } else {
+      resolve(result);
+    }
+  };
+}
 
-module.exports = (photo, video) => {
-  if (photo.disabled || video.disabled) {
-    /* Task not scheduled to run */
-    return Promise.reject(new Error('TASK_DISABLED'));
-  }
-
-  const tmpPath = path.join(os.tmpdir(), 'pilapse', uuid.v4());
-
-  const fileName = path.join(video.savePath, `${moment().format('YYYY-MM-DD')}.mp4`);
-
-  const cmd = `avconv -r 10 -i ${tmpPath}${path.sep}%d.jpg -r 10 -vcodec libx264 -crf 20 -g 15 ${fileName}`;
-
-  return new Promise((resolve, reject) => {
-    /* Move images to the tmp dir */
-    mv(photo.savePath, tmpPath, {
-      mkdirp: true
-    }, promiseCb(resolve, reject));
-  }).then(() => new Promise((resolve, reject) => {
-    /* Ensure the save path exists */
-    mkdirp(video.savePath, promiseCb(resolve, reject));
-  })).then(() => new Promise((resolve, reject) => {
-    /* Create the video */
-    exec(cmd, promiseCb(resolve, reject));
-  })).then(() => new Promise((resolve, reject) => {
-    /* Delete the tmpdir */
-    rimraf(tmpPath, err => {
-      if (err) {
-        reject(err);
-        return;
-      }
-
-      resolve(fileName);
+const generateGroupVideo = (db, group, tmpPath, cmd) => db
+  .getGroup(group)
+  .then(files => {
+    /* First job - copy and rename */
+    return files.reduce((thenable, file, count) => {
+      return thenable.then(() => {
+        return new Promise((resolve, reject) => {
+          fs.copy(file.fileName, `${tmpPath}${path.sep}${count}.jpg`, promiseCb(resolve, reject));
+        });
+      });
+    }, Promise.resolve()).then(() => {
+      /* Now generate the video */
+      return new Promise((resolve, reject) => {
+        exec(cmd, promiseCb(resolve, reject));
+      });
+    }).then(() => {
+      /* Finally, remove the tmp directory */
+      return new Promise((resolve, reject) => {
+        rimraf(tmpPath, promiseCb(resolve, reject));
+      });
     });
-  }));
-};
+  });
+
+module.exports = (db, photo, video) => Promise.resolve()
+  .then(() => {
+    if (video.disabled) {
+      /* Task not scheduled to run */
+      throw new Error('TASK_DISABLED');
+    }
+
+    const tmpPath = path.join(os.tmpdir(), 'pilapse', uuid.v4());
+
+    const fileName = path.join(video.savePath, `${moment().format('YYYY-MM-DD')}.mp4`);
+
+    const cmd = `avconv -r 10 -i ${tmpPath}${path.sep}%d.jpg -r 10 -vcodec libx264 -crf 20 -g 15 ${fileName}`;
+
+    return new Promise((resolve, reject) => {
+      /* Ensure tmpPath exists */
+      mkdirp(tmpPath, promiseCb(resolve, reject));
+    }).then(() => new Promise((resolve, reject) => {
+      /* Ensure video savePath exists */
+      mkdirp(video.savePath, promiseCb(resolve, reject));
+    })).then(() => db.getGroups()
+      .then(groups => groups.reduce((thenable, group) => thenable
+        .then(() => generateGroupVideo(db, group, tmpPath, cmd))
+        .then(() => db.getByFileName(fileName) /* Is this already in the database? */)
+        .then((file = {}) => {
+          file.type = 'video';
+          if (file.id) {
+            /* Update */
+            file.updated = 0;
+          } else {
+            file.fileName = fileName;
+          }
+
+          file.generated = 1;
+
+          return db.save(file);
+        }), Promise.resolve())));
+  });

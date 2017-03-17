@@ -47,6 +47,24 @@ module.exports = (logger, db, config, sunriseSunset) => Promise.resolve()
       }
     }
 
+    /* Allowed values are Y, M or D */
+    const group = config.group || 'D';
+
+    /* Default to daily */
+    let groupFormat = 'YYYY-MM-DD';
+    if (group === 'Y') {
+      groupFormat = 'YYYY';
+    } else if (group === 'M') {
+      groupFormat = 'YYYY-MM';
+    }
+
+    const groupName = moment().format(groupFormat);
+
+    const savePath = [
+      config.savePath,
+      groupName
+    ].join(path.sep);
+
     const now = Date.now();
 
     if ((times.sunrise.getTime() <= now && times.sunset.getTime() >= now) === false) {
@@ -59,22 +77,6 @@ module.exports = (logger, db, config, sunriseSunset) => Promise.resolve()
 
       return;
     }
-
-    /* Allowed values are Y, M or D */
-    const group = config.group || 'D';
-
-    /* Default to daily */
-    let groupFormat = 'YYYY-MM-DD';
-    if (group === 'Y') {
-      groupFormat = 'YYYY';
-    } else if (group === 'M') {
-      groupFormat = 'YYYY-MM';
-    }
-
-    const savePath = [
-      config.savePath,
-      moment().format(groupFormat)
-    ].join(path.sep);
 
     return new Promise((resolve, reject) => {
       /* Create the path where the photos are to be stored */
@@ -138,7 +140,8 @@ module.exports = (logger, db, config, sunriseSunset) => Promise.resolve()
         });
       }).then(({ cmd, fileName }) => db.save({
         type: 'img',
-        fileName
+        fileName,
+        group: savePath
       }).then(() => ({
         cmd,
         fileName

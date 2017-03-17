@@ -16,17 +16,36 @@ module.exports = class FileStore {
 
   createTable () {
     const sql = 'CREATE TABLE IF NOT EXISTS `files` ' +
-      '(`id` INTEGER,`fileName` TEXT,`uploaded` INTEGER NOT NULL DEFAULT 0, ' +
-      '`type` TEXT, `created` TEXT, `updated` TEXT, ' +
+      '(`id` INTEGER,`fileName` TEXT UNIQUE,`uploaded` INTEGER NOT NULL DEFAULT 0,' +
+      '`generated` INTEGER NOT NULL DEFAULT 0,' +
+      '`group` TEXT,`type` TEXT,`created` TEXT,`updated` TEXT, ' +
       'PRIMARY KEY(`id`));';
 
     return this._db.query(sql);
+  }
+
+  getByFileName (fileName) {
+    return this._db.query('SELECT * FROM files WHERE fileName = ?', [
+      fileName
+    ]);
+  }
+
+  getGroups () {
+    return this._db.query('SELECT DISTINCT `group` FROM files WHERE generated = ? ORDER BY created ASC', [
+      0
+    ]).then(groups => groups.map(({ group }) => group));
   }
 
   getFilesToUpload (filePath) {
     return this._db.query('SELECT * FROM files WHERE fileName LIKE ? AND uploaded = ?', [
       `${filePath}%`,
       0
+    ]);
+  }
+
+  getGroup (group) {
+    return this._db.query('SELECT * FROM files WHERE `group` = ? ORDER BY created ASC', [
+      group
     ]);
   }
 
@@ -43,7 +62,7 @@ module.exports = class FileStore {
       sql = 'UPDATE files SET';
       const obj = {};
       for (const key in data) {
-        sql += ` ${key} = $${key},`;
+        sql += '`' + key + '`' + ` = $${key},`;
         obj[`$${key}`] = data[key];
       }
       sql = sql.substr(0, sql.length - 1);
@@ -59,7 +78,7 @@ module.exports = class FileStore {
       const columns = [];
       const values = [];
       for (const key in data) {
-        columns.push(key);
+        columns.push('`' + key + '`');
         values.push(data[key]);
       }
 
@@ -71,10 +90,6 @@ module.exports = class FileStore {
       ];
     }
 
-    return this._db.query(sql, inserts)
-      .catch(err => {
-        console.log(err);
-        process.exit();
-      });
+    return this._db.query(sql, inserts);
   }
 };

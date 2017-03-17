@@ -18,9 +18,9 @@ VOLUME /var/image
 
 ENV LOG_LEVEL=info
 
-# Install NodeJS, Python and AVConv
+# Install NodeJS, AVConv and stuff to build SQLite3
 RUN apt-get update && \
-  apt-get -y install libav-tools curl python make && \
+  apt-get -y install libav-tools curl build-essential python-dev && \
   curl https://nodejs.org/dist/v6.10.0/node-v6.10.0-linux-$(uname -m).tar.xz -o /tmp/nodejs.tar.xz && \
   tar -xf /tmp/nodejs.tar.xz -C /tmp && \
   mv /tmp/node-v6.10.0-linux-$(uname -m) /opt/nodejs && \
@@ -28,6 +28,7 @@ RUN apt-get update && \
   ln -s /opt/nodejs/bin/npm /usr/bin/npm && \
   echo "node version: $(node --version)" && \
   echo "npm version: $(npm --version)" && \
+  npm config set unsafe-perm true && \
   npm install --production
 
 # Run run run

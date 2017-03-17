@@ -45,7 +45,7 @@ function upload (db, config, file) {
 module.exports = (logger, db, config, photoPath, videoPath) => Promise.resolve()
   .then(() => {
     if (config.disabled) {
-      return;
+      throw new Error('TASK_DISABLED');
     }
 
     /* Get the files */
@@ -57,7 +57,7 @@ module.exports = (logger, db, config, photoPath, videoPath) => Promise.resolve()
         .concat(photos)
         .concat(videos);
 
-      const pause = 10000;
+      const pause = config.pause || 10000;
 
       return uploads.reduce((thenable, file) => thenable
         .then(() => upload(db, config, file))

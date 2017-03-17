@@ -28,6 +28,8 @@ module.exports = class SQLite {
           if (err) {
             this._log.error({
               err,
+              sql,
+              args,
               code: 'DBERR'
             }, 'Database error');
 
@@ -36,6 +38,8 @@ module.exports = class SQLite {
           }
 
           this._log.info({
+            sql,
+            args,
             result,
             code: 'DBRESULT'
           }, 'Database result');
