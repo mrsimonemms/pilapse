@@ -66,6 +66,8 @@ The config allows granular control over the timelapse pictures and videos.
 }
 ```
 
+Get lat/long coords from [www.latlong.net](http://www.latlong.net)
+
 ### Root
 
 - `lat`: The Pi's latitude. This is used to calculate sunrise/sunset times
