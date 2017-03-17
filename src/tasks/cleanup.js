@@ -21,7 +21,7 @@ module.exports = (db, config) => Promise.resolve()
     const tasks = files.map(file => new Promise((resolve, reject) => {
       rimraf(file, {
         disableGlob: true
-      } ,err => {
+      }, err => {
         if (err) {
           reject(err);
           return;

@@ -118,7 +118,7 @@ Promise.all([
     /* Cleanup uploaded/generated data */
     cron.schedule(cleanup.interval, () => {
       taskRunner(id, 'DATACLEANUP', 'CLEANUP_OLD_DATA', () => cleanupData(files, cleanup));
-    })
+    });
   });
 }).catch(err => {
   logger.error({
