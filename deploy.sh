@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
-if [[ -z "$DOCKER_BUILD_NUMBER" ]]
-then
-  echo "Please provide a DOCKER_BUILD_NUMBER"
-  exit 1
-fi
-
+DOCKER_BUILD_NUMBER=$(git rev-parse --short HEAD)
 DOCKER_REPO=riggerthegeek/pilapse
 DOCKER_COMMIT=$(uname -m)
 
