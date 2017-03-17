@@ -1,17 +1,29 @@
 {
-  "lat": 52.477683,
-  "long": -1.900441,
+  "lat": 52.482154,
+  "long": -1.894503,
   "schedule": [{
-    "startTime": "auto",
-    "endTime": "auto",
-    "savePath": "/var/image/daily",
-    "raspistillOpts": [
-    ],
-    "interval": "* * * * *",
+    "config": {
+      "disabled": false,
+      "interval": "* */6 * * *"
+    },
+    "dropbox": {
+      "disabled": false,
+      "accessToken": "some token",
+      "savePath": "/Timelapses/daily",
+      "interval": "*/15 * * * *"
+    },
+    "photo": {
+      "disabled": false,
+      "group": "D",
+      "interval": "* * * * *",
+      "savePath": "/var/image/daily",
+      "raspistillOpts": [
+      ]
+    },
     "video": {
-      "interval": "30 23 * * *",
-      "savePath": "/var/image/daily-video",
-      "fileName": "daily.mp4"
+      "disabled": false,
+      "interval": "0 23 * * *",
+      "savePath": "/var/image/daily-video"
     }
   }]
 }
