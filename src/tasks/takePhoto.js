@@ -105,8 +105,8 @@ module.exports = (logger, db, config, sunriseSunset) => Promise.resolve()
 
         return result;
       }, [
-        '-h 1536',
-        '-w 2048',
+        '-h 720',
+        '-w 1280',
         '-q 35',
         '-mm matrix',
         '-ex auto',
