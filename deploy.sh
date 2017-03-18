@@ -23,15 +23,3 @@ DOCKER_VERSION=$(json -f ./package.json version)
 docker build -t $DOCKER_REPO:$DOCKER_COMMIT .
 docker tag $DOCKER_REPO:$DOCKER_COMMIT $DOCKER_REPO:$DOCKER_COMMIT-$DOCKER_VERSION
 docker push $DOCKER_REPO
-
-docker run --name pilapse \
-  -v /var/image:/var/image \
-  -v $PWD/config.json:/opt/app/config.json \
-  -v $PWD/pilapse.sql:/opt/app/pilapse.sql \
-  --privileged \
-  --restart=always \
-  -d \
-  --log-driver=syslog \
-  --log-opt syslog-address=udp://logs.papertrailapp.com:40966 \
-  --log-opt tag=pilapse \
-  riggerthegeek/pilapse:$(uname -m)
