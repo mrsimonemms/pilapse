@@ -101,7 +101,7 @@ Promise.all([
 
     /* Schedule the backup of the photos to dropbox */
     cron.schedule(dropbox.interval, () => {
-      taskRunner(id, 'DROPBOX', 'SAVE_TO_DROPBOX', dropboxBackup(
+      taskRunner(id, 'DROPBOX', 'SAVE_TO_DROPBOX', () => dropboxBackup(
         logger,
         files,
         dropbox,
