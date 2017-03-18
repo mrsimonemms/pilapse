@@ -24,8 +24,9 @@ For full instructions on installing Docker on a Raspberry Pi, take a look at
 
 > View on [Docker Hub](https://hub.docker.com/r/riggerthegeek/pilapse/)
 
-There are two optional volumes:
+There are some optional volumes:
  - `/opt/app/config.json`: the config file. You will probably want to set your own config.
+ - `/opt/app/pilapse.sql`: the SQLite file. If you want this stored on your Pi, you will need to do this.
  - `/var/image`: the image store. If you want to have the images stored on your Pi, you will need to do this.
 
 
