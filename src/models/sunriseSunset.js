@@ -44,6 +44,35 @@ module.exports = class SunriseSunset extends Model {
   }
 
   /**
+   * Is Daylight
+   *
+   * Calculates if the given times are in the daylight.
+   * As the data may not be valid today (ie, if the data
+   * hasn't been updated), we just look between the times
+   * not the date.
+   *
+   * @returns {boolean}
+   */
+  isDaylight () {
+    const times = {
+      sunrise: this.get('sunrise'),
+      sunset: this.get('sunset')
+    };
+
+    const today = new Date();
+    const now = today.getTime();
+
+    /* Ensure that the date is today's date */
+    for (const key in times) {
+      times[key].setFullYear(today.getFullYear());
+      times[key].setMonth(today.getMonth());
+      times[key].setDate(today.getDate());
+    }
+
+    return times.sunrise.getTime() <= now && times.sunset.getTime() >= now;
+  }
+
+  /**
    * Is Updated Today
    *
    * Has this been updated today?

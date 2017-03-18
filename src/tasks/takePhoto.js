@@ -11,6 +11,7 @@ const mkdirp = require('mkdirp');
 const moment = require('moment');
 
 /* Files */
+const SunriseSunset = require('../models/sunriseSunset');
 
 module.exports = (logger, db, config, sunriseSunset) => Promise.resolve()
   .then(() => {
@@ -47,6 +48,8 @@ module.exports = (logger, db, config, sunriseSunset) => Promise.resolve()
       }
     }
 
+    const obj = new SunriseSunset(times);
+
     /* Allowed values are Y, M or D */
     const group = config.group || 'D';
 
@@ -65,14 +68,14 @@ module.exports = (logger, db, config, sunriseSunset) => Promise.resolve()
       groupName
     ].join(path.sep);
 
-    const now = Date.now();
+    const now = moment().unix();
 
-    if ((times.sunrise.getTime() <= now && times.sunset.getTime() >= now) === false) {
+    if (obj.isDaylight() === false) {
       /* Nothing to do */
       logger.info({
         code: 'NOPHOTOSCHEDULED',
         now: new Date(now),
-        times
+        times: obj.getData()
       }, 'No photo scheduled to be taken');
 
       return;
