@@ -7,6 +7,7 @@ const fs = require('fs');
 
 /* Third-party modules */
 const _ = require('lodash');
+const moment = require('moment');
 
 /* Files */
 const request = require('../lib/request');
@@ -47,11 +48,14 @@ module.exports = (logger, savePath, lat = null, lng = null) => Promise.resolve()
       code: 'SSUPDATING'
     }, 'Cached sunrise/sunset times to be updated');
 
+    const date = moment().format('YYYY-MM-DD');
+
     const opts = {
       uri: 'http://api.sunrise-sunset.org/json',
       qs: {
         lat,
         lng,
+        date,
         formatted: 0
       },
       json: true
