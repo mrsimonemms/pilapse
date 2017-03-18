@@ -1,6 +1,6 @@
 {
   "name": "pilapse",
-  "version": "0.2.0",
+  "version": "0.1.0",
   "description": "Configures a timelapse camera for a Raspberry Pi.",
   "main": "index.js",
   "scripts": {
