@@ -54,7 +54,8 @@ const taskRunner = (id, codeName, taskName, fn) => {
     uuid
   }, `Task: ${taskName} scheduled to run`);
 
-  return fn()
+  return Promise.resolve()
+    .then(() => fn())
     .then(result => {
       logger.info({
         id,
