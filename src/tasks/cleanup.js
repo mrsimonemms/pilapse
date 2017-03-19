@@ -18,8 +18,8 @@ module.exports = (db, config) => Promise.resolve()
     return db.getDeadFiles();
   })
   .then(files => {
-    const tasks = files.map(file => new Promise((resolve, reject) => {
-      rimraf(file, {
+    const tasks = files.map(({ fileName }) => new Promise((resolve, reject) => {
+      rimraf(fileName, {
         disableGlob: true
       }, err => {
         if (err) {
