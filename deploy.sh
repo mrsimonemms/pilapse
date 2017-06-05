@@ -14,7 +14,7 @@ then
   exit 1
 fi
 
-npm
+npm help
 if [ $? > 0 ]
 then
   echo "npm must be installed"
