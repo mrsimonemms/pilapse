@@ -14,13 +14,6 @@ then
   exit 1
 fi
 
-npm help
-if [ $? \> 0 ]
-then
-  echo "npm must be installed"
-  exit 1
-fi
-
 json --help
 if [ $? \> 0 ]
 then
@@ -30,6 +23,12 @@ fi
 
 sudo rm -Rf node_modules
 npm version $1
+
+if [ $? \> 0 ]
+then
+  echo "npm must be installed"
+  exit 1
+fi
 
 # Set the Docker version
 DOCKER_VERSION=$(json -f ./package.json version)
