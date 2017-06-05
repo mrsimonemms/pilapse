@@ -25,7 +25,7 @@ json
 if [ $? \> 0 ]
 then
   echo "json must be installed"
-  echo 1
+  exit 1
 fi
 
 sudo rm -Rf node_modules
