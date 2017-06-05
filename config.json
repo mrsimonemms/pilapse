@@ -19,11 +19,6 @@
       "savePath": "/var/image/daily",
       "raspistillOpts": [
       ]
-    },
-    "video": {
-      "disabled": false,
-      "interval": "0 23 * * *",
-      "savePath": "/var/image/daily-video"
     }
   }]
 }

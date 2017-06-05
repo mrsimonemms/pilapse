@@ -17,7 +17,6 @@ module.exports = class FileStore {
   createTable () {
     const sql = 'CREATE TABLE IF NOT EXISTS `files` ' +
       '(`id` INTEGER,`fileName` TEXT UNIQUE,`uploaded` INTEGER NOT NULL DEFAULT 0,' +
-      '`generated` INTEGER NOT NULL DEFAULT 0,' +
       '`group` TEXT,`type` TEXT,`created` TEXT,`updated` TEXT, ' +
       'PRIMARY KEY(`id`));';
 
@@ -31,16 +30,9 @@ module.exports = class FileStore {
   }
 
   getDeadFiles () {
-    return this._db.query('SELECT * FROM files WHERE generated = ? AND uploaded = ?', [
-      1,
+    return this._db.query('SELECT * FROM files WHERE uploaded = ?', [
       1
     ]);
-  }
-
-  getGroups () {
-    return this._db.query('SELECT DISTINCT `group` FROM files WHERE generated = ? ORDER BY created ASC', [
-      0
-    ]).then(groups => groups.map(({ group }) => group));
   }
 
   getFilesToUpload (filePath) {

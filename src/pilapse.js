@@ -20,10 +20,8 @@ const cleanupData = require('./tasks/cleanup');
 const Database = require('./lib/database');
 const dropboxBackup = require('./tasks/dropboxBackup');
 const FilesStore = require('./store/files');
-const generateVideo = require('./tasks/generateVideo');
 const sunriseSunset = require('./tasks/sunriseSunset');
 const takePhoto = require('./tasks/takePhoto');
-// const tweetVideo = require('./tasks/tweetVideo');
 
 const logger = bunyan.createLogger({
   name: 'pilapse',
@@ -90,9 +88,7 @@ Promise.all([
   config.schedule.forEach(({
     cleanup = { disabled: true },
     dropbox = { disabled: true },
-    photo = { disabled: true },
-    twitter = { disabled: true },
-    video = { disabled: true }
+    photo = { disabled: true }
   }, id) => {
     /* Schedule the update of sunrise/sunset and taking of the photo */
     cron.schedule(photo.interval, () => {
@@ -106,14 +102,8 @@ Promise.all([
         logger,
         files,
         dropbox,
-        photo.savePath,
-        video.savePath
+        photo.savePath
       ));
-    });
-
-    /* Generate the video */
-    cron.schedule(video.interval, () => {
-      taskRunner(id, 'VIDEOGENERATE', 'GENERATE_VIDEO', () => generateVideo(files, video));
     });
 
     /* Cleanup uploaded/generated data */
