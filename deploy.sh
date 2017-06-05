@@ -15,14 +15,14 @@ then
 fi
 
 npm help
-if [ $? > 0 ]
+if [ $? \> 0 ]
 then
   echo "npm must be installed"
   exit 1
 fi
 
 json
-if [ $? > 0 ]
+if [ $? \> 0 ]
 then
   echo "json must be installed"
   echo 1
