@@ -21,7 +21,7 @@ then
   exit 1
 fi
 
-json
+json --help
 if [ $? \> 0 ]
 then
   echo "json must be installed"
